@@ -81,59 +81,42 @@ router.get('/player-stats', async function(req, res, next) {
         const playerStats = data.matches[0].playerStats;
         const mode = data.matches[0].mode;
         const loadout = data.matches[0].player.loadout[0];
-
+        
+        // dito mo lulutuin ung hinimay mo s data hehe  
         if (!loadout) {
-          res.status(200).json({
-            author:'Baje',
-            msg:'2 joints',
-            success: true,
-            data: {
-              get_Stats: {
-                utcStartSeconds: utcStartSeconds,
-                playerStats: playerStats,
-                primaryWeapon: null,
-                secondaryWeapon: null
-              },
-              competitive_report: {
-                mode: mode,
-                utcStartSeconds: utcStartSeconds,
-                playerStats: playerStats,
-              }
+          sanitizedData = {
+            get_Stats: {
+              utcStartSeconds,
+              playerStats,
+              primaryWeapon: null,
+              secondaryWeapon: null
             },
-            version: '2.0.0',
-            code: '0'
-          });
+            competitive_report: {
+              mode,
+              utcStartSeconds,
+              playerStats,
+            }
+          }
         } else {
-          res.status(200).json({
-            author:'Baje',
-            msg:'2 joints',
-            success: true,
-            data: {
-              get_Stats: {
-                utcStartSeconds: utcStartSeconds,
-                playerStats: playerStats,
-                primaryWeapon: data.matches[0].player.loadout[0].primaryWeapon.name,
-                secondaryWeapon: data.matches[0].player.loadout[0].secondaryWeapon.name
-              },
-              competitive_report: {
-                mode: mode,
-                utcStartSeconds: utcStartSeconds,
-                playerStats: playerStats,
-              }
+          sanitizedData = {
+            get_Stats: {
+              utcStartSeconds,
+              playerStats,
+              primaryWeapon: data.matches[0].player.loadout[0].primaryWeapon.name,
+              secondaryWeapon: data.matches[0].player.loadout[0].secondaryWeapon.name
             },
-            version: '2.0.0',
-            code: '0'
-          });
+            competitive_report: {
+              mode,
+              utcStartSeconds,
+              playerStats,
+            }
+          }
         }
-
-        // dito mo lulutuin ung hinimay mo s data hehe
-        //sanitizedData = { ...data };
-
       } catch(err0) {
          console.log('[ERROR] ', err0);
          return sendError(res, err0);
       }
-      //return sendSuccess(res, sanitizedData);
+      return sendSuccess(res, sanitizedData);
     }
 
     return sendError(res, 'Server failed.');
