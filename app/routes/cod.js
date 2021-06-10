@@ -19,7 +19,7 @@ const { sendError, sendSuccess } = require ('../utils/methods');
 
 router.post('/authenticate', async function(req, res, next) {
   let token = config.getToken(req.headers);
-  
+
   console.log('[PARAMS BODY] ', req.params, req.body);
 
   if (token) {
@@ -28,10 +28,10 @@ router.post('/authenticate', async function(req, res, next) {
       let res1;
       try {
         res1 = await API.login(email, password);
-        console.log('[RES1] ', res1);  
+        console.log('[RES1] ', res1);
       } catch(err0) {
          console.log('[ERROR] ', err0);
-         return sendError(res, err0);       
+         return sendError(res, err0);
       }
       return sendSuccess(res, res1);
     } else {
@@ -43,7 +43,7 @@ router.post('/authenticate', async function(req, res, next) {
 router.get('/player-stats', async function(req, res, next) {
   let token = config.getToken(req.headers);
 
-   
+
   console.log('[QUERY PARAMS BODY] ', req.query, req.params, req.body);
 
 
@@ -62,9 +62,9 @@ router.get('/player-stats', async function(req, res, next) {
       xbl, acti, uno, all - "Incorrect username or platform? Misconfigured privacy settings?"
     */
     let data;
-    let sanitizedData;    
+    let sanitizedData;
     if (req.query.gametag && req.query.platform) {
-      const { gametag, platform } = req.query;      
+      const { gametag, platform } = req.query;
       try {
 
         const res1 = await API.login(
@@ -76,17 +76,66 @@ router.get('/player-stats', async function(req, res, next) {
 
         // ALLOWED: psn, xbl, battle, steam
         data = await API.MWcombatwz(gametag, platform);
-      
+
+        const utcStartSeconds = data.matches[0].utcStartSeconds;
+        const playerStats = data.matches[0].playerStats;
+        const mode = data.matches[0].mode;
+        const loadout = data.matches[0].player.loadout[0];
+
+        if (!loadout) {
+          res.status(200).json({
+            author:'Baje',
+            msg:'2 joints',
+            success: true,
+            data: {
+              get_Stats: {
+                utcStartSeconds: utcStartSeconds,
+                playerStats: playerStats,
+                primaryWeapon: null,
+                secondaryWeapon: null
+              },
+              competitive_report: {
+                mode: mode,
+                utcStartSeconds: utcStartSeconds,
+                playerStats: playerStats,
+              }
+            },
+            version: '2.0.0',
+            code: '0'
+          });
+        } else {
+          res.status(200).json({
+            author:'Baje',
+            msg:'2 joints',
+            success: true,
+            data: {
+              get_Stats: {
+                utcStartSeconds: utcStartSeconds,
+                playerStats: playerStats,
+                primaryWeapon: data.matches[0].player.loadout[0].primaryWeapon.name,
+                secondaryWeapon: data.matches[0].player.loadout[0].secondaryWeapon.name
+              },
+              competitive_report: {
+                mode: mode,
+                utcStartSeconds: utcStartSeconds,
+                playerStats: playerStats,
+              }
+            },
+            version: '2.0.0',
+            code: '0'
+          });
+        }
+
         // dito mo lulutuin ung hinimay mo s data hehe
-        sanitizedData = { ...data };
-      
+        //sanitizedData = { ...data };
+
       } catch(err0) {
          console.log('[ERROR] ', err0);
-         return sendError(res, err0);       
+         return sendError(res, err0);
       }
-      return sendSuccess(res, sanitizedData);
+      //return sendSuccess(res, sanitizedData);
     }
-    
+
     return sendError(res, 'Server failed.');
   //}
 });
