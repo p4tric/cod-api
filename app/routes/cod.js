@@ -62,8 +62,7 @@ router.get('/player-stats', async function(req, res, next) {
       xbl, acti, uno, all - "Incorrect username or platform? Misconfigured privacy settings?"
     */
     let data;
-    let sanitizedData;
-    
+    let sanitizedData;    
     if (req.query.gametag && req.query.platform) {
       const { gametag, platform } = req.query;      
       try {
@@ -72,7 +71,6 @@ router.get('/player-stats', async function(req, res, next) {
       
         // dito mo lulutuin ung hinimay mo s data hehe
         sanitizedData = { ...data };
-      
       
       } catch(err0) {
          console.log('[ERROR] ', err0);
