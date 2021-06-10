@@ -63,62 +63,30 @@ router.get('/player-stats', async function(req, res, next) {
     */
     let data;
     let sanitizedData;
+
     if (req.query.gametag && req.query.platform) {
       const { gametag, platform } = req.query;
       try {
-
         const res1 = await API.login(
           'jadokodeih@gmail.com',
           'jadoma99'
         );
-        console.log('[RES1] ', res1);
-
-
         // ALLOWED: psn, xbl, battle, steam
         data = await API.MWcombatwz(gametag, platform);
-
-        const utcStartSeconds = data.matches[0].utcStartSeconds;
-        const playerStats = data.matches[0].playerStats;
-        const mode = data.matches[0].mode;
-        const loadout = data.matches[0].player.loadout[0];
         
         // dito mo lulutuin ung hinimay mo s data hehe  
-        if (!loadout) {
-          sanitizedData = {
-            get_Stats: {
-              utcStartSeconds,
-              playerStats,
-              primaryWeapon: null,
-              secondaryWeapon: null
-            },
-            competitive_report: {
-              mode,
-              utcStartSeconds,
-              playerStats,
-            }
-          }
-        } else {
-          sanitizedData = {
-            get_Stats: {
-              utcStartSeconds,
-              playerStats,
-              primaryWeapon: data.matches[0].player.loadout[0].primaryWeapon.name,
-              secondaryWeapon: data.matches[0].player.loadout[0].secondaryWeapon.name
-            },
-            competitive_report: {
-              mode,
-              utcStartSeconds,
-              playerStats,
-            }
-          }
-        }
+        sanitizedData = {
+          get_Stats: data.summary.all,
+          competitive_report: data.matches.map(match => {
+            return { ...match };
+          }),
+        };         
       } catch(err0) {
          console.log('[ERROR] ', err0);
          return sendError(res, err0);
       }
       return sendSuccess(res, sanitizedData);
     }
-
     return sendError(res, 'Server failed.');
   //}
 });
