@@ -43,15 +43,19 @@ app.use(function(req, res, next) {
 });
 
 app.use(passport.initialize());
-app.use(fileUpload());
+// app.use(fileUpload());
 
 mongoose.Promise = global.Promise;
+
 /////////////////////////////////////////////////////
+console.log('[ HHH ]');
+
+/*
 //connect to MongoDB
 mongoose.connect(config.database); //, { useNewUrlParser: true }
 var db = mongoose.connection;
 
-console.log('[ HHH ]');
+
 //handle mongo error
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('openUri', function (data) {
@@ -70,6 +74,7 @@ app.use(session({
   })
 }))
 ///////////////////////////////////////////////////////
+*/
 
 // view engine setup
 app.set('views', path.join(__dirname, '/app/views'));
@@ -87,7 +92,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/account', account);
 app.use('/vsers', passport.authenticate('jwt', { session: false}), vsers);
-app.use('/cod', passport.authenticate('jwt', { session: false}), cod);
+app.use('/cod', cod);
 
 const dir = path.join(__dirname, 'public');
 

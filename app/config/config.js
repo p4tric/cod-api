@@ -20,5 +20,5 @@ module.exports = {
   },
 };
 
-//mongoose.connect('mongodb://localhost/rptgen');
+//mongoose.connect('mongodb://localhost/cod');
 //mongoose.connect('mongodb://user:abcd1234@localhost/cod');

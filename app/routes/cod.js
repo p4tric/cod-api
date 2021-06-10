@@ -47,7 +47,7 @@ router.get('/player-stats', async function(req, res, next) {
   console.log('[QUERY PARAMS BODY] ', req.query, req.params, req.body);
 
 
-  if (token) {
+  //if (token) {
     /*
       psn      // PlayStation
       steam    // Steam
@@ -66,6 +66,14 @@ router.get('/player-stats', async function(req, res, next) {
     if (req.query.gametag && req.query.platform) {
       const { gametag, platform } = req.query;      
       try {
+
+        const res1 = await API.login(
+          'jadokodeih@gmail.com',
+          'jadoma99'
+        );
+        console.log('[RES1] ', res1);
+
+
         // ALLOWED: psn, xbl, battle, steam
         data = await API.MWcombatwz(gametag, platform);
       
@@ -80,7 +88,7 @@ router.get('/player-stats', async function(req, res, next) {
     }
     
     return sendError(res, 'Server failed.');
-  }
+  //}
 });
 
 /*
