@@ -13,7 +13,6 @@ config              = require('../config/config');
 require('../config/pp')(passport);
 
 // const API = require('call-of-duty-api')();
-const API = require('call-of-duty-api')({ platform: "all" });
 
 const { sendError, sendSuccess } = require ('../utils/methods');
 
@@ -62,23 +61,40 @@ router.get('/player-stats', async function(req, res, next) {
       xbl, acti, uno, all - "Incorrect username or platform? Misconfigured privacy settings?"
     */
     let data;
+    let data1;
+    let data2 = undefined;
     let sanitizedData;
 
     if (req.query.gametag && req.query.platform) {
       const { gametag, platform } = req.query;
       try {
+        const API = require('call-of-duty-api')({ platform });
+
         const res1 = await API.login(
           'jadokodeih@gmail.com',
           'jadoma99'
         );
+
+        console.log('[LLOGGG]  ', res1);
+        
         // ALLOWED: psn, xbl, battle, steam
-        const mutatedGameTag = gametag.replace(/#/g, '%23');
+        const mutatedGameTag = gametag.replace(/%23/g, '#');
         console.log('[mutatedGameTag] ', mutatedGameTag);
         
         data = await API.MWcombatwz(mutatedGameTag, platform);
-        
+        if (req.query.search) {
+          data2 = await API.FuzzySearch(req.query.search, 'all');
+        }
+
+
+        // FOR LOGGED USERS ONLY
+        // data1 = await API.Settings(mutatedGameTag, platform);
+
+
         // dito mo lulutuin ung hinimay mo s data hehe  
         sanitizedData = {
+          results: data2,
+          // settings: data1,
           get_Stats: data.summary.all,
           competitive_report: data.matches.map(match => {
             return { ...match };
