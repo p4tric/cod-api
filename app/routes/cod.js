@@ -72,7 +72,10 @@ router.get('/player-stats', async function(req, res, next) {
           'jadoma99'
         );
         // ALLOWED: psn, xbl, battle, steam
-        data = await API.MWcombatwz(gametag, platform);
+        const mutatedGameTag = gametag.replace(/#/g, '%23');
+        console.log('[mutatedGameTag] ', mutatedGameTag);
+        
+        data = await API.MWcombatwz(mutatedGameTag, platform);
         
         // dito mo lulutuin ung hinimay mo s data hehe  
         sanitizedData = {
