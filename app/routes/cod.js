@@ -14,7 +14,7 @@ require('../config/pp')(passport);
 
 // const API = require('call-of-duty-api')();
 
-const { sendError, sendSuccess } = require ('../utils/methods');
+const { checkTimestamp, sendError, sendSuccess } = require ('../utils/methods');
 
 router.get('/player-stats', async function(req, res, next) {
   let token = config.getToken(req.headers);
@@ -58,13 +58,37 @@ router.get('/player-stats', async function(req, res, next) {
         // FOR LOGGED USERS ONLY
         // data1 = await API.Settings(mutatedGameTag, platform);
 
+        const sortedMatches = data.matches
+          .sort((a, b) => (a.utcEndSeconds > b.utcEndSeconds) ? -1 : 1);
+        
+        let kills;
+        let teamPlacement
+        if (sortedMatches.length > 0) {
+          kills = sortedMatches[0].playerStats.kills;
+          teamPlacement = sortedMatches[0].playerStats.teamPlacement;
+        }
+
         sanitizedData = {
-          results: data2,
-          // settings: data1,
+          // data,
+          /*
+          teamPlacement: data.matches.map(m => {
+            return {
+              mode: m.mode,
+              tp: m.playerStats.teamPlacement,
+            };
+          }),
+          */
+          latest: {
+            kills: kills ? kills : null,
+            teamPlacement: teamPlacement ? teamPlacement : null,
+            match: sortedMatches.length > 0 ? sortedMatches[0] : null,
+          },
           get_Stats: data.summary.all,
-          competitive_report: data.matches.map(match => {
+          // settings: data1,
+          competitive_report: sortedMatches.map(match => {
             return { ...match };
           }),
+          results: data2,
         };         
       } catch(err0) {
          console.log('[ERROR] ', err0);

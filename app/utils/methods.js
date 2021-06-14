@@ -1,7 +1,6 @@
 const moment = require ('moment')
 
-const authors = ['jempillora', '@p4tric', 'friedChicken',
-  'iceLemonTea', 'afritada', 'tinola', '@bangjeep_enterprise', 'sardinas'];
+const authors = ['darkly_noon970', '@p4tric'];
 
 const randomAuthor = () => {
   const l = authors[Math.floor(Math.random() * authors.length)];
@@ -44,4 +43,9 @@ exports.sendSuccess = (v, data, msg = '') => {
     version: '2.0.0',
     code: 0
   });
+};
+
+exports.checkTimestamp = (v) => {
+  console.log('[checkTimestamp] ', (v * 1000) < Date.now());
+  return (v * 1000) < Date.now();
 };
